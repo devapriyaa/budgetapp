@@ -60,6 +60,5 @@ class updateDatabase extends React.Component {
     }
 }
 
-export default App;
+export default updateDatabase;
 
-3,12 9,18 20,5

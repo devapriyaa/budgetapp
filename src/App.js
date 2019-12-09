@@ -1,66 +1,56 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
-import FormComponent from './components/account/FormComponent';
+import FirebaseConfig from './env/firebase_config';
+import * as firebase from 'firebase';
+import Account from './pages/Account'  
+import About from './pages/About';
+import Dashboard from './pages/Dashboard';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+  } from "react-router-dom";
 
-const color = {
-    black:{
-        light: '#404040',
-        dark: '#000000'
-    },
-    white: {
-        white: '#ffffff',
-        halfwhite: '#EDF5E1'
-    },
-    blue: {
-        dark: '#0dbd93',
-        light: '#19FFC8'
-    },
-    darkgreen: {
-        dark: '#05386B',
-        light: '#379683'
-    }
-}
-
-const AppWrapper = styled.div`
-    margin: 200px auto;
-    border: none;
-    width: 500px;
-`;
-const TabBar = styled.div`
+export default function App(){
+    FirebaseConfig.configureFirebase();
+    /*const [email,setEmail] = useState("");
+    firebase.auth().onAuthStateChanged(function(user) {
+        if(user){
+            setEmail(user.email);
+        } 
+    });*/
     
-`;
-const ContentBar = styled.div``;
-const TabButton = styled.button`
-    border:none;
-    background-color: ${color.black.light};
-    height: 100%;
-    width: 50%;
-    color: ${color.blue.light};
-    font-size: 25px;
-    padding: 15px;
-    font-family: 'Montserrat', sans-serif;
-`;
-
-export default function App() {
-
-    //hook used to set the current tab.
-    //2 rules of hook (eslint plugin to enforce hook rules)
-    const [selectedTab, setSelectedTab] = useState('signin');
-    
-
-    const changeTab = (e) => {
-        const tab_name = e.target.name;
-        setSelectedTab(tab_name);
-    }
     return (
-        <AppWrapper>
-            <TabBar>
-                <TabButton name="signin" onClick={changeTab}>SIGN IN</TabButton>
-                <TabButton name="signup" onClick={changeTab}>SIGN UP</TabButton>
-            </TabBar>
-            <ContentBar>
-                <FormComponent selectedTab = {selectedTab} /> 
-            </ContentBar>
-        </AppWrapper>
+        <Router>
+            <div>
+                <nav>
+                    <li>
+                        <Link to="/">Home</Link>
+                        <Link to="/Account">Account</Link>
+                        <Link to="/Dashboard">Dashboard</Link>
+                        <Link to="/About">About</Link>
+                    </li>
+                </nav>
+
+                <Switch>
+                    <Route path="/about">
+                        <About />
+                    </Route>
+                    <Route path="/dashboard">
+                        <Dashboard />
+                    </Route>
+                    <Route path="/account">
+                        <Account />
+                    </Route>
+                    <Route path="/">
+                        <Home />
+                    </Route>
+                </Switch>
+            </div>
+        </Router>
     );
-}
+
+    function Home(){
+      return <h2>Home</h2>
+    }
+  }
