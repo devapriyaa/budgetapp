@@ -13,48 +13,34 @@ function configureFirebase() {
     appId: "1:85324095005:web:5643b8edc98756ad3030f4"
   };
   firebase.initializeApp(Config);
+  //get reference to the database service.
+  let database = firebase.database;
+  //asynchronous listener to retrieve data
+  let databaseRef = firebase.database().ref('budget/');
 }
 
-/*
-const buttonType = user.buttonType;
-  
 
-  if(buttonType){
-    var result = signingInWithEmailandPassword(email,password);
-    console.log(result);
-  }
-  
-  /*if (buttonType === "signin") {
-    
-    firebase.auth()
-      .signInWithEmailAndPassword(email, password)
-      .then(function(user){
-        //debugger;
-        //currentUserDetails = firebase.auth().currentUser;
-      })
-      .catch(error => {
-        
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        if (errorCode === 'auth/wrong-password') {
-          alert('Wrong password.');
-        } else {
-          alert(errorMessage);
-        }
-        console.log(error);
-      }); 
- // return currentUserDetails.uid;    
-  } */
-
-const signingInWithEmailandPassword = (user) => new Promise(resolve => {
+//Sign in function
+  const signingInWithEmailandPassword = (user) => new Promise(resolve => {
   const email = user.userEmail;
   const password = user.userPassword;
   firebase.auth().signInWithEmailAndPassword(email, password)
     .then(function (firebaseUser) {
       resolve(true);
-    })
+    }).catch(error => {
+        
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      if (errorCode === 'auth/wrong-password') {
+        alert('Wrong password.');
+      } else {
+        alert(errorMessage);
+      }
+      console.log(error);
+    }); 
 });
 
+//Creates new user
 const signingUpWithEmailandPassword = (user) => new Promise(resolve => {
   const email = user.userEmail;
   const password = user.userPassword;
@@ -64,15 +50,24 @@ const signingUpWithEmailandPassword = (user) => new Promise(resolve => {
     })
 });
 
+//get current user information
 const getCurrentUser = () => {
   var user = firebase.auth().currentUser;
   if(user != null){
     return true;
   }
 }
+
+//Writes to database.
+const writeData = (data) => {
+  console.log(data)
+}
+
+//
 export default {
   configureFirebase,
   signingInWithEmailandPassword,
   signingUpWithEmailandPassword,
-  getCurrentUser
+  getCurrentUser,
+  writeData
 };

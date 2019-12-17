@@ -1,46 +1,71 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import DatabaseOperation from '../env/firebase_config'
+import Icon from '../components/Icon';
+import ErrorBoundry from '../Error component/ErrorBoundry'
 
-const PageWrapper = styled.div``;
-const PageTable = styled.table``;
-const TableRow = styled.tr``;
-const TableHeader = styled.th``;
-const TableData = styled.td``;
-const PageInput = styled.input``;
-const PageButton = styled.button``;
+const color = {
+    dark: {
+        Ming: "#006D77",
+        DarkSalmon: "#E29578"
+    },
+    light: {
+        MiddleBlueGreen: "#83C5BE",
+        AliceBlue: "#EDF6F9",
+        MistyRose: "#FFDDD2",
+        White: "#ffffff"
+    }
+}
+const size = {
+    icon: {
+        width: 50,
+        height: 50
+    },
+    iconText: 30
+}
+
+const PageWrapper = styled.div`
+    margin: 200px;
+    padding: 50px;
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    grid-gap: 10px;
+    border-color: black;
+    border-style: solid;
+`;
+const ButtonWrapper = styled.div`
+    display : grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 100px;
+    grid-gap: 10px; 
+`;
+const GridButton = styled.div`
+    border-color: black;
+    border-style: solid;
+`;
+const TextCategory = styled.div`
+    border-color: black;
+    border-style: solid;
+`;
+
 
 export default function StartBudget() {
-    const [field,setField] = useState([]);
+   const iconList = ["House", "Car", "Food", "Utilities", "Clothing", "HealthCare", "Insurance", "HouseholdItems", "PersonalCare", "Debt","Education","Savings", "GiftsAndDonation","Entertainment","Addition"];
 
-    function addField(){
-        var firstField = 'field-0-'+field.length;
-        var secondField = 'field-1-'+field.length;
-        var newArray = [firstField,secondField];
-        setField(oldField => [...oldField, newArray]);      
-    }
     return (
-            <PageWrapper>
-                <PageTable>
-                    <TableRow>
-                        <TableHeader>Catogory</TableHeader>
-                        <TableHeader>Budget Amount</TableHeader>
-                    </TableRow>
-                    {field.map(category => 
-                        <TableRow>
-                            {category.map(fields => 
-                                <TableData><PageInput value={fields}/></TableData>
-                            )}                            
-                        </TableRow> 
-                    )}               
-                    <TableRow>
-                        <TableData>
-                            <PageButton>Create Budget</PageButton>
-                        </TableData>
-                        <TableData>
-                            <PageButton onClick={addField}>Create New Catogory</PageButton>
-                        </TableData>
-                    </TableRow>
-                </PageTable>
-            </PageWrapper>
+        <PageWrapper>
+            <ButtonWrapper>
+                {iconList.map((value,index) => {
+                    return (
+                        <GridButton key={index}>
+                            <ErrorBoundry>
+                            <Icon icon={value} color = {color.dark.Ming} width = {size.icon.width} height = {size.icon.height} />
+                            </ErrorBoundry>
+                        </GridButton>
+                    );
+                })}
+            </ButtonWrapper> 
+            <TextCategory />   
+        </PageWrapper>
     );
 }

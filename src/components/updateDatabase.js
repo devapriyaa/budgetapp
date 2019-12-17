@@ -3,19 +3,7 @@ import React from 'react';
 //import FirebaseConfig from '../env/firebase_config';
 
 
-class updateDatabase extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            username: '',
-            password: ''
-        }
-        //initialize firebase SDK.
-        // firebase.initializeApp(FirebaseConfig);
-        // //get reference to database service.
-        // this.database = firebase.database();
-        // this.databaseRef = this.database.ref('users/');
-    }
+
 
    
     /*Data retrieved with asynchronous listener.
