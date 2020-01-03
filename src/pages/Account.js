@@ -4,29 +4,13 @@ import AppCheckbox from '../components/AppCheckbox';
 import firebaseOperation from '../env/firebase_config';
 import {useHistory} from 'react-router-dom';
 
-  const color = {
-    black: {
-        light: '#404040',
-        dark: '#000000'
-    },
-    white: {
-        white: '#ffffff',
-        halfwhite: '#EDF5E1'
-    },
-    blue: {
-        dark: '#0dbd93',
-        light: '#19FFC8'
-    },
-    darkgreen: {
-        dark: '#05386B',
-        light: '#379683'
-    }
-}
+  
 
 const AppWrapper = styled.div`
-    margin: 200px auto;
+    margin: 150px auto;
     border: none;
     width: 500px;
+    height: 400px;
 `;
 const TabBar = styled.div`
     
@@ -34,10 +18,8 @@ const TabBar = styled.div`
 const ContentBar = styled.div``;
 const TabButton = styled.button`
     border:none;
-    background-color: ${color.black.light};
     height: 100%;
     width: 50%;
-    color: ${color.blue.light};
     font-size: 25px;
     padding: 15px;
     font-family: 'Montserrat', sans-serif;
@@ -49,11 +31,9 @@ const AppContent = styled.form`
   `;
 const AppField = styled.fieldset`
     border: 1px solid;
-   border-color: ${color.white.halfwhite};
    height: 50px;
   `;
 const Applegend = styled.legend`
-    color: ${color.white.halfwhite};
     font-size: 20px;
     font-family: 'Montserrat', sans-serif;
   `;
@@ -64,20 +44,17 @@ const AppInput = styled.input`
   `;
 
 const AppLabel = styled.label`
-    color: ${color.white.halfwhite};
     font-size: 20px;
     font-family: 'Montserrat', sans-serif;
   `;
 const AppButton = styled.button`  
-    background-color: ${color.blue.dark};
     border: none;
     height: 50px;
-    color: ${color.white.halfwhite};
     font-size: 25px;
     font-family: 'Montserrat', sans-serif;
   `;
 
-export default function Account(){
+export default function Account(props){
     //hook is used to set the current tab.
     //2 rules of hook (eslint plugin to enforce hook rules)
     const [selectedTab, setSelectedTab] = useState('signin');
@@ -88,7 +65,7 @@ export default function Account(){
         setSelectedTab(tab_name);
     }
     return (
-        <AppWrapper>
+        <AppWrapper slidingIn = {props.openLogin}>
             <TabBar>
                 <TabButton name="signin" onClick={changeTab}>SIGN IN</TabButton>
                 <TabButton name="signup" onClick={changeTab}>SIGN UP</TabButton>
@@ -127,6 +104,7 @@ export default function Account(){
             if(result === true){
                 history.replace('/dashboard');
                 console.log("signed in");
+                window.location.reload();
             }  
         }
 
@@ -161,7 +139,7 @@ export default function Account(){
                             <AppInput id="password" type="password" name="password" onChange={handlePasswordChange} />
                         </AppField>
                         <AppLabel>
-                            <AppCheckbox status={checked} onChange={checkboxChange} />Remember Me
+                            <AppCheckbox checked={checked} onChange={checkboxChange} />Remember Me
                         </AppLabel>
                         <AppButton type="submit" onClick={isSigningIn} name="signin">SIGN IN</AppButton>
                     </AppContent> :

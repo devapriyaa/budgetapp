@@ -1,36 +1,86 @@
-import React, { useState } from 'react';
-import FirebaseConfig from './env/firebase_config';
-import * as firebase from 'firebase';
-import Account from './pages/Account'  
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import Home from './pages/Home';
+import AccountDetails from './pages/UserDetails';
 import About from './pages/About';
 import Dashboard from './pages/Dashboard';
+import colors from './env/colors';
+import db from './env/firebase_config';
+
 import {
     BrowserRouter as Router,
     Switch,
     Route,
     Link
-  } from "react-router-dom";
+} from "react-router-dom";
+db.configureFirebase();
 
-export default function App(){
-    FirebaseConfig.configureFirebase();
-    /*const [email,setEmail] = useState("");
-    firebase.auth().onAuthStateChanged(function(user) {
-        if(user){
-            setEmail(user.email);
-        } 
-    });*/
+
+
+const NavBar = styled.nav`
+        background-color: ${colors.secondry.light_grey};
+        width:100%;
+        margin:0 auto;
+        position: sticky;
+        text-align: right;
+        height: 30px;
+        padding: 15px;
+        font: 17px 'Quicksand', sans-serif;
+        
+    `;
+const List = styled.li`
+        display: inline;
+    `;
+
+const StyledLink = styled(Link)`
+        text-decoration: none;
+        padding-right: 80px;    
+        color: white;  
+    `;
+
+export default function App() {
+    const [openLogin, setOpenLogin] = useState(false);
+    const [userID, setUserID] = useState();
+
+    const checkAccount = () => {
+        setOpenLogin(true);
+    }
+
+    const loggingout = async () => {
+       let logoutStatus = await db.logout();
+       logoutStatus ? window.location.reload() : console.log("something went wrong");
+    }
+
+    const getLoginPageStatus = (dataFromHome) => {
+        dataFromHome ? setOpenLogin(true) : setOpenLogin(false);
+    }
+
+    useEffect(() => {
+        async function fetchData() {
+            let result = await db.signedUser();
+            if (result) {
+                setUserID(db.getCurrentUser().uid);
+            }
+            else {
+                setUserID("")
+            }
+        }
+        fetchData();
+    });
     
     return (
         <Router>
             <div>
-                <nav>
-                    <li>
-                        <Link to="/">Home</Link>
-                        <Link to="/Account">Account</Link>
-                        <Link to="/Dashboard">Dashboard</Link>
-                        <Link to="/About">About</Link>
-                    </li>
-                </nav>
+                <NavBar>
+                    <List><StyledLink to="/">Home</StyledLink></List>
+                    {userID ? <>
+                        <List><StyledLink to="/" onClick={loggingout}>Log out</StyledLink></List>
+                        <List><StyledLink to="/Dashboard">Dashboard</StyledLink></List>
+                        <List><StyledLink to="/AccountDetails">{userID}</StyledLink></List> </> :
+
+                        <List><StyledLink to="/" onClick={checkAccount}>Login</StyledLink></List>}
+                    <List><StyledLink to="/About">About</StyledLink></List>
+                </NavBar>
 
                 <Switch>
                     <Route path="/about">
@@ -39,18 +89,16 @@ export default function App(){
                     <Route path="/dashboard">
                         <Dashboard />
                     </Route>
-                    <Route path="/account">
-                        <Account />
+                    <Route path="/accountdetails">
+                        <AccountDetails />
                     </Route>
                     <Route path="/">
-                        <Home />
+                        <Home LoginPageStatus = {getLoginPageStatus} openLogin = {openLogin}/>
                     </Route>
                 </Switch>
             </div>
         </Router>
     );
 
-    function Home(){
-      return <h2>Home</h2>
-    }
-  }
+
+}

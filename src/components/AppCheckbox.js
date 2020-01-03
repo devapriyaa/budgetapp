@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 const color = {
-    black:{
+    black: {
         light: '#404040',
         dark: '#000000'
     },
@@ -18,7 +18,7 @@ const color = {
         dark: '#05386B',
         light: '#379683'
     }
-  }
+}
 
 const CheckboxContainer = styled.div`
     display: inline-block;
@@ -35,7 +35,7 @@ const Icon = styled.svg`
 const HiddenCheckbox = styled.input.attrs({ type: 'checkbox' })`
   position: absolute;
   opacity: 0;
-`;  
+`;
 
 //custom checkbox for good look , no background work.
 const StyledCheckbox = styled.div`
@@ -45,7 +45,7 @@ const StyledCheckbox = styled.div`
     transition: all 200ms;
     border-color: ${color.white.halfwhite};
     border: solid 1px;
-    background: ${props => props.checked ? color.white.halfwhite : 'none' };
+    background: ${props => props.checked ? color.white.halfwhite : 'none'};
     ${HiddenCheckbox}:hover + & {
         box-shadow: 0 0 0 3px ${color.white.halfwhite} inset;
       }
@@ -54,15 +54,17 @@ const StyledCheckbox = styled.div`
     }
     `;
 
-const AppCheckbox = ({ className, status, ...props }) => (
+const AppCheckbox = (props) => (
+
     <CheckboxContainer>
-        <HiddenCheckbox checked={status} {...props}/>
-        <StyledCheckbox checked={status} {...props}>
+        <HiddenCheckbox checked={props.checked} {...props} />
+        <StyledCheckbox checked={props.checked} {...props}>
             <Icon viewBox="0 0 20 20">
                 <polyline points="18,3 8,16 3,10" />
             </Icon>
         </StyledCheckbox>
     </CheckboxContainer>
+
 )
 
 export default AppCheckbox

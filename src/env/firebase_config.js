@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
 import * as firebase from 'firebase';
-import { promises } from 'dns';
 
 function configureFirebase() {
   var Config = {
@@ -14,11 +12,8 @@ function configureFirebase() {
   };
   firebase.initializeApp(Config);
   //get reference to the database service.
-  let database = firebase.database;
-  //asynchronous listener to retrieve data
-  let databaseRef = firebase.database().ref('budget/');
-}
 
+}
 
 //Sign in function
   const signingInWithEmailandPassword = (user) => new Promise(resolve => {
@@ -28,7 +23,6 @@ function configureFirebase() {
     .then(function (firebaseUser) {
       resolve(true);
     }).catch(error => {
-        
       var errorCode = error.code;
       var errorMessage = error.message;
       if (errorCode === 'auth/wrong-password') {
@@ -53,21 +47,62 @@ const signingUpWithEmailandPassword = (user) => new Promise(resolve => {
 //get current user information
 const getCurrentUser = () => {
   var user = firebase.auth().currentUser;
-  if(user != null){
-    return true;
-  }
+  return user;
 }
+
+//create new table
+const createTable = (data) => new Promise(resolve => {
+    var userID = getCurrentUser().uid;
+    firebase.database().ref('users/'+userID).set({title:data})
+    .then(()=>{
+      resolve(true)
+    })
+  });
+
+
+//Reads from database.
+const readData = (userID) => new Promise(resolve => {
+  firebase.database().ref('/users/' +userID).once('value')
+    .then(function(snapshot){
+      resolve(snapshot.val());
+  })
+}) ;
 
 //Writes to database.
 const writeData = (data) => {
-  console.log(data)
 }
 
-//
+//logout 
+const logout = () => new Promise(resolve => {
+  firebase.auth().signOut()
+  .then(()=>{
+    resolve(true)
+  })
+  .catch((error)=>{
+    resolve(false)
+    console.log(error);
+  })
+});
+
+//get current signed user
+const signedUser = () => new Promise(resolve => {
+  firebase.auth().onAuthStateChanged((user)=>{
+    if(user){
+      resolve(true);
+    }
+    else{
+      resolve(false);
+    }
+  })
+});
 export default {
   configureFirebase,
   signingInWithEmailandPassword,
   signingUpWithEmailandPassword,
   getCurrentUser,
-  writeData
+  createTable,
+  readData,
+  writeData,
+  signedUser,
+  logout
 };

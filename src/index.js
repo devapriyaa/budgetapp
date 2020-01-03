@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';  
-//import App from './App'
-import StartBudget from './pages/startBudget';
+import App from './App';
+
 ReactDOM.render(
-        <StartBudget />
+        <App />
     ,document.getElementById('root'));
