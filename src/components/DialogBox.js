@@ -24,9 +24,9 @@ const DialogBox = (props) => {
     }
     const createData = async (e) => {
         e.preventDefault();
-        let result = true//await db.createTable(title);
+        let result = await db.createTitle(title);
         if(result){
-            props.onClose();
+            props.onClose()
         }
     }
     return(

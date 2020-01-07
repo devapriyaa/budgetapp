@@ -1,13 +1,15 @@
-import React, { useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Icon from '../components/Icon';
 import AppCheckBox from '../components/AppCheckbox';
 import SubmitButton from '../components/SubmitButton';
 import AddButton from '../components/AddButton';
-import AppText from '../components/AppText';
+import AppTextArea from '../components/AppTextArea';
 import ErrorBoundry from '../Error component/ErrorBoundry'
 import DialogBox from '../components/DialogBox';
 import db from '../env/firebase_config';
+import color from '../env/colors'
+import ReactDOM from 'react-dom';
 
 
 const size = {
@@ -20,47 +22,61 @@ const size = {
 
 const PageWrapper = styled.div`
     margin: auto;
-    margin-top: 10%;
+    margin-top: 5%;
     top: 20%;
     padding: 2%;
     display: grid;
     grid-template-columns: 1fr;
     grid-auto-rows: minmax(50%, auto);
-    grid-gap: 10px;
+    grid-gap: 20px;
     border: none;
-    width: 70%;
+    width: 45%;
 `;
 
-const Header = styled.div``;
+const Header = styled.div`
+    font: 23px 'Quicksand', sans-serif;
+    color: ${color.grey.dark_grey};
+    padding-bottom: 2%;
+`;
 const ContentWrapper = styled.div`
     display : grid;
-    grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
-    grid-gap: 5px
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 15px
 `;
-const CheckList = styled.span`
-    display: inline-block;
-    padding: 20px
-    width: 80%;
-    height: 30%;
-    box-shadow: 0.3em 0.3em 1em rgba(0,0,0,0.3);
+const CheckList = styled.div`
+    position: relative;
+    height: auto;
+    box-shadow: 0.3em 0.3em 0.7em rgba(0,0,0,0.3), inset 2px 2px 0px ${color.grey.dark_grey};
+    text-align: center;
+    padding: 20px;
+    min-width: 100px;
 `;
-const CheckboxLabel = styled.label``;
+const CheckBox = styled.div`
+    position: absolute;
+    top: 0;
+    right: 0;
+`;
+const CheckboxLabel = styled.div`
+    text-align: center;
+    h4{
+        margin: 0;
+        font: 15px 'Quicksand', sans-serif;
+        color: ${color.grey.dark_grey};
+    }
+`;
 const ButtonWrapper = styled.div`
     display : grid;
     grid-template-columns: 50% 25% 25%;
     grid-gap: 5px;
 `;
-const AppTextArea = styled.div`
-    width: 100%;
-    height: 50px;
-    rows = 4;
-    columns = 50;
+
+const IconName = styled.h4`
 `;
 
 
 export default function StartBudget() {
     const [showInput, setShowInput] = useState(false);
-    const [iconList, setIconChecked] = useState([
+    const [iconList, setItems] = useState([
         { value: "House", checked: false },
         { value: "Car", checked: false },
         { value: "Food", checked: false },
@@ -76,16 +92,15 @@ export default function StartBudget() {
         { value: "Gifts", checked: false },
         { value: "Entertainment", checked: false },
         { value: "Misc", checked: false }]);
-    const [newCategory, setNewCategory] = useState(["veera","hi"]);
+    const [checkedItems, setCheckedItems] = useState([]);
+    const [newCategory, setNewCategory] = useState([]);
     const [showDialog, setShowDialog] = useState(false);
     const [title, setTitle] = useState();
+
     const checkboxChange = (e) => {
-        iconList.map(icons => {
-            if (icons.value === e.target.name) {
-                icons.checked = e.target.checked;
-            }
-        })
-        setIconChecked([...iconList])
+        let value = String(e.target.name)
+        let ischecked = checkedItems.concat(value)
+        setCheckedItems(ischecked)
     }
 
     const onHandle = (e) => {
@@ -96,54 +111,63 @@ export default function StartBudget() {
         let newArray = newCategory.concat(dataFromChild);
         setNewCategory(newArray);
     }
-    const deleteNewCategoryCallBack = (dataFromChild) => {
-        let positionOfData = newCategory.indexOf(dataFromChild)
-        newCategory.splice(positionOfData,1)
-        setNewCategory(newCategory)
+    const handleDeleteCategory = value => {
+        setNewCategory(newCategory.filter(category => category !== value))
     }
-    const saveAllCategory = () => {
 
+
+    const saveAllCategory = async () => {
+        let category = checkedItems.concat(newCategory)
+        await db.createCategory(category)
     }
     const showDialogBox = async (e) => {
-        var userId = db.getCurrentUser().uid;
-        let title = await db.readData(userId);
-        title ? console.log("title already created") : setShowDialog(!showDialog)
+        if (checkedItems.length === 0 && newCategory.length === 0) {
+            alert("select any category or type a category before proceeding");
+        } else {
+            var userId = db.getCurrentUser().uid;
+            let title = await db.readTitle(userId);
+            title ? saveAllCategory() : setShowDialog(!showDialog)
+        }
     }
 
     const handleDialogClose = () => {
         setShowDialog(false);
+        saveAllCategory();
     }
-    
+
 
     return (
         <>
-        <DialogBox showDialog={showDialog} onClose={handleDialogClose} />
-        <PageWrapper>
-            <Header>Choose the Budget Category</Header>
-            <ContentWrapper>
-                {iconList.map((icons,index) => {
-                    return (
-                        <CheckList key = {index}>
-                            <ErrorBoundry>
-                                <CheckboxLabel>
-                                    <AppCheckBox name={icons.value} checked={icons.checked} onChange={checkboxChange} />
-                                    <Icon icon={icons.value}  width={size.icon.width} height={size.icon.height} />{icons.value}
-                                </CheckboxLabel>
-                            </ErrorBoundry>
-                        </CheckList>
-                    );
-                })}
-            </ContentWrapper>
-            <ButtonWrapper>
-                <AppTextArea>
-                    {newCategory.map((value, index) =>
-                        <AppText deleteNewCategory={deleteNewCategoryCallBack} key={index} value={value} />
-                    )}
-                </AppTextArea>
-                <AddButton name="Add" addNewCategory={addNewCategoryCallBack} showInput={showInput} onClick={onHandle} />
-                <SubmitButton name="Create Budget" onClick={showDialogBox}/>
-            </ButtonWrapper>
-        </PageWrapper>
+            <DialogBox showDialog={showDialog} onClose={handleDialogClose} />
+            <PageWrapper>
+                <Header>Choose the Budget Category</Header>
+                <ContentWrapper>
+                    {iconList.map((icons, index) => {
+                        return (
+                            <CheckList key={index}>
+                                <ErrorBoundry>
+                                    <CheckBox>
+                                        <AppCheckBox 
+                                            name={icons.value} 
+                                            checked={checkedItems.includes(icons.value)} 
+                                            onChange={checkboxChange} />
+                                    </CheckBox>
+                                   
+                                    <CheckboxLabel>
+                                        <Icon icon={icons.value} color={color.grey.dark_grey} width={size.icon.width} height={size.icon.height} />
+                                        <IconName>{icons.value}</IconName>
+                                    </CheckboxLabel>
+                                </ErrorBoundry>
+                            </CheckList>
+                        );
+                    })}
+                </ContentWrapper>
+                <ButtonWrapper>
+                    <AppTextArea value={newCategory} onDeleteCategory={handleDeleteCategory} />
+                    <AddButton name="Add" addNewCategory={addNewCategoryCallBack} showInput={showInput} onClick={onHandle} />
+                    <SubmitButton name="Create Budget" onClick={showDialogBox} />
+                </ButtonWrapper>
+            </PageWrapper>
         </>
     );
 } 

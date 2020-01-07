@@ -18,7 +18,7 @@ db.configureFirebase();
 
 
 const NavBar = styled.nav`
-        background-color: ${colors.secondry.light_grey};
+        background-color: ${colors.grey.dark_grey};
         width:100%;
         margin:0 auto;
         position: sticky;
@@ -26,7 +26,6 @@ const NavBar = styled.nav`
         height: 30px;
         padding: 15px;
         font: 17px 'Quicksand', sans-serif;
-        
     `;
 const List = styled.li`
         display: inline;
@@ -40,7 +39,7 @@ const StyledLink = styled(Link)`
 
 export default function App() {
     const [openLogin, setOpenLogin] = useState(false);
-    const [userID, setUserID] = useState();
+    const [username, setUsername] = useState();
 
     const checkAccount = () => {
         setOpenLogin(true);
@@ -59,10 +58,14 @@ export default function App() {
         async function fetchData() {
             let result = await db.signedUser();
             if (result) {
-                setUserID(db.getCurrentUser().uid);
+                let userID = db.getCurrentUser().uid;
+                let username =await db.readUsername(userID);
+                if(username){
+                    setUsername(username.username);    
+                }
             }
             else {
-                setUserID("")
+                setUsername("")
             }
         }
         fetchData();
@@ -73,10 +76,10 @@ export default function App() {
             <div>
                 <NavBar>
                     <List><StyledLink to="/">Home</StyledLink></List>
-                    {userID ? <>
+                    {username ? <>
                         <List><StyledLink to="/" onClick={loggingout}>Log out</StyledLink></List>
                         <List><StyledLink to="/Dashboard">Dashboard</StyledLink></List>
-                        <List><StyledLink to="/AccountDetails">{userID}</StyledLink></List> </> :
+                        <List><StyledLink to="/AccountDetails">{username}</StyledLink></List> </> :
 
                         <List><StyledLink to="/" onClick={checkAccount}>Login</StyledLink></List>}
                     <List><StyledLink to="/About">About</StyledLink></List>

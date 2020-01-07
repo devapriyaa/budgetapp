@@ -38,9 +38,13 @@ function configureFirebase() {
 const signingUpWithEmailandPassword = (user) => new Promise(resolve => {
   const email = user.userEmail;
   const password = user.userPassword;
-  firebase.auth().createUserWithEmailAndPassword(email, password)
+   firebase.auth().createUserWithEmailAndPassword(email, password)
     .then(function (firebaseUser){
       resolve(true);
+      console.log("account created")
+    })
+    .catch((error)=>{
+      console.log(error);
     })
 });
 
@@ -53,16 +57,38 @@ const getCurrentUser = () => {
 //create new table
 const createTable = (data) => new Promise(resolve => {
     var userID = getCurrentUser().uid;
-    firebase.database().ref('users/'+userID).set({title:data})
+    firebase.database().ref('users/'+userID).set({username:data})
     .then(()=>{
       resolve(true)
     })
   });
 
+  const createTitle = (data) => new Promise(resolve => {
+    var userID = getCurrentUser().uid;
+    firebase.database().ref('users/'+userID).update({title: data})
+    .then(()=>{
+      resolve(true)
+    })
+  });
+
+  const createCategory =(data) => new Promise(resolve => {
+    var userID = getCurrentUser().uid;
+    firebase.database().ref('users/'+userID).update({category: data})
+    .then(()=>{
+      resolve(true)
+    })
+  })
 
 //Reads from database.
-const readData = (userID) => new Promise(resolve => {
+const readUsername = (userID) => new Promise(resolve => {
   firebase.database().ref('/users/' +userID).once('value')
+    .then(function(snapshot){
+      resolve(snapshot.val());
+  })
+}) ;
+
+const readTitle =(userID) => new Promise(resolve => {
+  firebase.database().ref('/users/' +userID+ '/title/').once('value')
     .then(function(snapshot){
       resolve(snapshot.val());
   })
@@ -101,7 +127,10 @@ export default {
   signingUpWithEmailandPassword,
   getCurrentUser,
   createTable,
-  readData,
+  createTitle,
+  createCategory,
+  readUsername,
+  readTitle,
   writeData,
   signedUser,
   logout

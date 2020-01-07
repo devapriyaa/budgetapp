@@ -1,29 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
-
-const color = {
-    black: {
-        light: '#404040',
-        dark: '#000000'
-    },
-    white: {
-        white: '#ffffff',
-        halfwhite: '#EDF5E1'
-    },
-    blue: {
-        dark: '#0dbd93',
-        light: '#19FFC8'
-    },
-    darkgreen: {
-        dark: '#05386B',
-        light: '#379683'
-    }
-}
+import color from '../env/colors';
 
 const CheckboxContainer = styled.div`
     display: inline-block;
     vertical-align: middle;
-    padding-right: 7px;
 `;
 
 const Icon = styled.svg`
@@ -33,21 +14,23 @@ const Icon = styled.svg`
 `
 //hide the original checkbox but do all background work.
 const HiddenCheckbox = styled.input.attrs({ type: 'checkbox' })`
+    top: 0;
+    right: 0;
   position: absolute;
   opacity: 0;
 `;
 
 //custom checkbox for good look , no background work.
 const StyledCheckbox = styled.div`
-    display: inline-block; 
+    top:0;
+    right: 0;
     width: 20px;
     height: 20px;
     transition: all 200ms;
-    border-color: ${color.white.halfwhite};
-    border: solid 1px;
-    background: ${props => props.checked ? color.white.halfwhite : 'none'};
+    border: solid 2px ${color.grey.dark_grey};
+    background: ${props => props.checked ? color.grey.dark_grey : 'none'};
     ${HiddenCheckbox}:hover + & {
-        box-shadow: 0 0 0 3px ${color.white.halfwhite} inset;
+        box-shadow: 0 0 0 3px ${color.grey.dark_grey} inset;
       }
     ${Icon}{
         visibility: ${props => props.checked ? 'visible' : 'hidden'};

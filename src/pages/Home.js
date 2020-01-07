@@ -58,7 +58,9 @@ const LoginButton = styled.button`
             transform: translate(-50%, -50%);
        `;
 
-const NewAccount = styled.a`
+const NewAccount = styled.button`
+            background: none;
+            border: none;
             position: absolute;
             top: 65%;
             left: 50%;
@@ -73,8 +75,13 @@ const CloseIcon = styled.span`
            
         `;
 export default function Home(props) {
-        const openLoginPage = () => {
+        const [tabStatus,setTabStatus] = useState(false)
+        const openLoginPage = (e) => {
+            e.preventDefault();
             props.LoginPageStatus(true);
+            if(e.target.name === "signup"){
+                setTabStatus("true")
+            }
         }
         const closeLoginPage = () => {
             props.LoginPageStatus(false);
@@ -84,12 +91,12 @@ export default function Home(props) {
             <Background>
                 <Title>Budget..Spend..Save</Title>
                 <LoginButton onClick={openLoginPage}>SIGN IN</LoginButton>
-                <NewAccount>Join Us</NewAccount>
+                <NewAccount  name="signup" onClick={openLoginPage}>Join Us</NewAccount>
                 <LoginPage openLogin={props.openLogin}>
                     <CloseIcon onClick={closeLoginPage}>
                         <Icon color="black" icon="Close" width="40" height="40" />
                     </CloseIcon>
-                    <Account />
+                    <Account Tab={tabStatus}/>
                 </LoginPage>
             </Background>
         );

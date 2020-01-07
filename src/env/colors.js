@@ -1,12 +1,12 @@
 const colors = {
-    primary: {
-        orange: "#F27360",
-        blue: "#46BAE3",
-        dark_grey: "#383D50"
+    grey: { 
+        dark_grey: "#6B6766",
+        light_grey: "#8c8785"
     },
-    secondry: {
-        light_grey: "#6B6766"
-    }
+    blue: {
+        dark: '#0dbd93',
+        light: '#19FFC8'
+    },
 }
 
 export default colors;

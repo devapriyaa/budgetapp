@@ -1,16 +1,24 @@
 import React from 'react';
 import styled from 'styled-components';
-
+import color from '../env/colors';
 
 const TextWrapper = styled.span`
+    display: inline-block;
+    width: auto;
     border-style: solid;
     border-width: 1px;
-    border-color: black;
-    padding: 5px 0 5px 10px;
+    border-color: ${color.grey.dark_grey};
+    padding: 3px 0 3px 10px;
+    margin: 2px;
 `;
-const Text = styled.span``;
+const Text = styled.span`
+    font: 13px 'Quicksand', sans-serif;
+    color: ${color.grey.dark_grey}
+`;
 const Cancel = styled.button`
+    font: 13px 'Quicksand', sans-serif;
     border : none;
+    color: ${color.grey.dark_grey}
 `;
 
 const AppText = (props) => {
