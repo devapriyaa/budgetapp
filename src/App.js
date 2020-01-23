@@ -13,6 +13,7 @@ import {
     Route,
     Link
 } from "react-router-dom";
+import Budget from './pages/startBudget';
 db.configureFirebase();
 
 
@@ -76,6 +77,7 @@ export default function App() {
             <div>
                 <NavBar>
                     <List><StyledLink to="/">Home</StyledLink></List>
+                    
                     {username ? <>
                         <List><StyledLink to="/" onClick={loggingout}>Log out</StyledLink></List>
                         <List><StyledLink to="/Dashboard">Dashboard</StyledLink></List>
@@ -88,6 +90,9 @@ export default function App() {
                 <Switch>
                     <Route path="/about">
                         <About />
+                    </Route>
+                    <Route path ="/startBudget">
+                        <Budget />
                     </Route>
                     <Route path="/dashboard">
                         <Dashboard />

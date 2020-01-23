@@ -1,10 +1,15 @@
 import React,{useState, useEffect} from 'react';
 import styled from 'styled-components';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route
+} from "react-router-dom";
 import AppCheckbox from '../components/AppCheckbox';
 import firebaseOperation from '../env/firebase_config';
 import {useHistory} from 'react-router-dom';
-import color from '../env/colors'
-  
+import color from '../env/colors';
+ import createBudget from "./createBudget"; 
 
 const AppWrapper = styled.div`
     margin: 150px auto;
@@ -65,25 +70,15 @@ export default function Account(props){
 
     useEffect(()=>{
         if(props.Tab){
-            setSelectedTab("signup");
+            setSelectedTab(props.Tab);
         }
     })
+
 
     const changeTab = (e) => {
         const tab_name = e.target.name;
         setSelectedTab(tab_name);
     }
-    return (
-        <AppWrapper slidingIn = {props.openLogin}>
-            <TabBar>
-                <TabButton changeTabColor={selectedTab} name="signin" onClick={changeTab}>SIGN IN</TabButton>
-                <TabButton changeTabColor={selectedTab} name="signup" onClick={changeTab}>SIGN UP</TabButton>
-            </TabBar>
-            <ContentBar>
-                <UserForm selectedTab={selectedTab} />
-            </ContentBar>
-        </AppWrapper>
-    );
 
     function UserForm(props) {
         const [checked, setChecked] = useState(false);
@@ -116,9 +111,8 @@ export default function Account(props){
             }
             var result = await firebaseOperation.signingInWithEmailandPassword(user);   
             if(result === true){
-                history.replace('/dashboard');
                 console.log("signed in");
-                window.location.reload();
+                startBudget();
             }  
         }
 
@@ -135,10 +129,16 @@ export default function Account(props){
                 var result = await firebaseOperation.signingUpWithEmailandPassword(user);  
                 if(result){
                     console.log(username)
-                    firebaseOperation.createTable(username);
-                    history.replace('/dashboard');
+                    var storedUserConfirmation = await firebaseOperation.createTable(username);
+                    if(storedUserConfirmation){
+                        startBudget();
+                    }
                 }  
             }
+        }
+        const startBudget = () => {
+            history.replace("/startBudget")
+            window.location.reload(); 
         }
         return (
             <>
@@ -178,4 +178,15 @@ export default function Account(props){
             </>
         );
     }
+    return (
+        <AppWrapper slidingIn = {props.openLogin}>
+            <TabBar>
+                <TabButton changeTabColor={selectedTab} name="signin" onClick={changeTab}>SIGN IN</TabButton>
+                <TabButton changeTabColor={selectedTab} name="signup" onClick={changeTab}>SIGN UP</TabButton>
+            </TabBar>
+            <ContentBar>
+                <UserForm selectedTab={selectedTab} />
+            </ContentBar>
+        </AppWrapper>
+    );
 }
