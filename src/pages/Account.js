@@ -1,15 +1,9 @@
 import React,{useState, useEffect} from 'react';
 import styled from 'styled-components';
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route
-} from "react-router-dom";
 import AppCheckbox from '../components/AppCheckbox';
 import firebaseOperation from '../env/firebase_config';
 import {useHistory} from 'react-router-dom';
 import color from '../env/colors';
- import createBudget from "./createBudget"; 
 
 const AppWrapper = styled.div`
     margin: 150px auto;
@@ -65,6 +59,7 @@ const AppButton = styled.button`
 export default function Account(props){
     //hook is used to set the current tab.
     //2 rules of hook (eslint plugin to enforce hook rules)
+    
     const [selectedTab, setSelectedTab] = useState('signin');
     let history = useHistory();
 
@@ -111,8 +106,7 @@ export default function Account(props){
             }
             var result = await firebaseOperation.signingInWithEmailandPassword(user);   
             if(result === true){
-                console.log("signed in");
-                startBudget();
+                loadStartBudget();
             }  
         }
 
@@ -131,14 +125,22 @@ export default function Account(props){
                     console.log(username)
                     var storedUserConfirmation = await firebaseOperation.createTable(username);
                     if(storedUserConfirmation){
-                        startBudget();
+                        loadStartBudget();
                     }
                 }  
             }
         }
-        const startBudget = () => {
-            history.replace("/startBudget")
-            window.location.reload(); 
+        const loadStartBudget = async () => {
+            const userID = firebaseOperation.getCurrentUser().uid;
+            const category = await firebaseOperation.getCategoryDetails(userID);
+            const subcategory = await firebaseOperation.getSubcategoryDetails(userID);
+            if(category === null || subcategory === null) {
+                history.replace("/startBudget?category="+category+"&subcategory="+subcategory+"#");  
+                window.location.reload();
+            }else{
+                history.replace("/Dashboard")
+                window.location.reload();
+            } 
         }
         return (
             <>

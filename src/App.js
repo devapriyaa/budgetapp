@@ -27,6 +27,7 @@ const NavBar = styled.nav`
         height: 30px;
         padding: 15px;
         font: 17px 'Quicksand', sans-serif;
+        display: ${props => props.currentPath === "/startBudget" ? "none" : "block"}
     `;
 const List = styled.li`
         display: inline;
@@ -41,6 +42,7 @@ const StyledLink = styled(Link)`
 export default function App() {
     const [openLogin, setOpenLogin] = useState(false);
     const [username, setUsername] = useState();
+    const currentPath = window.location.pathname;
 
     const checkAccount = () => {
         setOpenLogin(true);
@@ -75,7 +77,7 @@ export default function App() {
     return (
         <Router>
             <div>
-                <NavBar>
+                <NavBar currentPath={currentPath}>
                     <List><StyledLink to="/">Home</StyledLink></List>
                     
                     {username ? <>
@@ -101,7 +103,7 @@ export default function App() {
                         <AccountDetails />
                     </Route>
                     <Route path="/">
-                        <Home LoginPageStatus = {getLoginPageStatus} openLogin = {openLogin}/>
+                        <Home username={username} LoginPageStatus = {getLoginPageStatus} openLogin = {openLogin}/>
                     </Route>
                 </Switch>
             </div>

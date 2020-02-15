@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
 import styled from 'styled-components';
 import AppCheckBox from '../components/AppCheckbox';
 import SubmitButton from '../components/SubmitButton';
@@ -82,22 +82,7 @@ const IconName = styled.h4`
 
 export default function createBudget(props) {
     const [showInput, setShowInput] = useState(false);
-    const [iconList, setItems] = useState([
-        { value: "House", checked: false },
-        { value: "Car", checked: false },
-        { value: "Food", checked: false },
-        { value: "Utilities", checked: false },
-        { value: "Clothing", checked: false },
-        { value: "HealthCare", checked: false },
-        { value: "Insurance", checked: false },
-        { value: "Household", checked: false },
-        { value: "Personal", checked: false },
-        { value: "Debt", checked: false },
-        { value: "Education", checked: false },
-        { value: "Savings", checked: false },
-        { value: "Gifts", checked: false },
-        { value: "Entertainment", checked: false },
-        { value: "Misc", checked: false }]);
+    const iconList = [ "House" , "Car","Food","Utilities","Clothing","HealthCare","Insurance","Household","Personal","Debt","Education","Savings","Gifts","Entertainment","Misc"];
     const [checkedItems, setCheckedItems] = useState([]);
     const [newCategory, setNewCategory] = useState([]);
     const [showDialog, setShowDialog] = useState(false);
@@ -125,15 +110,13 @@ export default function createBudget(props) {
         setTitle(e.target.value)
     }
     
-    const onClickSumbit =()=> {
+    const onClickSumbit = async ()=> {
         if(title === null){
             alert("Enter the title for your project first");
         }
         else if (checkedItems.length === 0 && newCategory.length === 0){
             alert("select any category or type a category before proceeding");
         }else {
-            //var userId = db.getCurrentUser().uid;
-            //let title = await db.readTitle(userId);
             saveAllCategory();
         }
     }
@@ -168,14 +151,14 @@ export default function createBudget(props) {
                                 <ErrorBoundry>
                                     <CheckBox>
                                         <AppCheckBox 
-                                            name={icons.value} 
-                                            checked={checkedItems.includes(icons.value)} 
+                                            name={icons} 
+                                            checked={checkedItems.includes(icons)} 
                                             onChange={checkboxChange} />
                                     </CheckBox>
                                    
                                     <CheckboxLabel>
-                                        <Icon icon={icons.value} color={color.grey.dark_grey} width={size.icon.width} height={size.icon.height} />
-                                        <IconName>{icons.value}</IconName>
+                                        <Icon icon={icons} color={color.grey.dark_grey} width={size.icon.width} height={size.icon.height} />
+                                        <IconName>{icons}</IconName>
                                     </CheckboxLabel>
                                 </ErrorBoundry>
                             </CheckList>

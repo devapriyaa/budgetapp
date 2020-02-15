@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import Account from './Account';
 import piggy from '../env/images/Piggy-Bank.jpg';
@@ -86,8 +86,13 @@ export default function Home(props) {
         const closeLoginPage = () => {
             props.LoginPageStatus(false);
         }
-
+        
         return (
+            <>
+            {props.username ? 
+            <Background>
+            <h1>{props.username}</h1>
+        </Background>:
             <Background>
                 <Title>Budget..Spend..Save</Title>
                 <LoginButton onClick={openLoginPage}>SIGN IN</LoginButton>
@@ -98,6 +103,8 @@ export default function Home(props) {
                     </CloseIcon>
                     <Account Tab={tabStatus}/>
                 </LoginPage>
-            </Background>
+            </Background> 
+            }
+            </>
         );
     }

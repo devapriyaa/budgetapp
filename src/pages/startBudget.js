@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import colors from '../env/colors';
 import CreateBudget from './createBudget';
+import Subcategory from './subCategory';
 
 const BudgetWrapper = styled.div`
     margin-top: 100px;
@@ -30,20 +31,35 @@ const TabButton = styled.span`
 const ContentBar = styled.div`
     border: 5px solid ${colors.grey.dark_grey};
 `;
-const BudgetContent = styled.form``;
 
 
-export default function startBudget(props){
-    const [selectedTab,setSelectedTab] = useState('createCategory');
-    function Budget () {
-        return(<h1>hi</h1>)
+export default function startBudget(props) {
+    const [selectedTab, setSelectedTab] = useState('createCategory');
+    const url = window.location.href;
+
+    const parseURL = (data) => {
+        var queryStart = data.indexOf("?") + 1,
+            queryEnd = data.indexOf("#") + 1 || data.length + 1,
+            query = data.slice(queryStart, queryEnd - 1),
+            pairs = query.split("&"),
+            cat = ((pairs[0].split("="))[1]).split(",");
+           // subcat = (pairs[1].split("="))[1];
+        return cat;
     }
-    const changeTab = (dataFromChild) =>{
-        if(dataFromChild){
+
+    const changeTab = (dataFromChild) => {
+        if (dataFromChild) {
             setSelectedTab("subcategory");
         }
     }
-    return(
+
+    useEffect(() => {
+        if (String(parseURL(url)) !== "null") {
+            setSelectedTab("subcategory");
+        }
+    })
+
+    return (
         <BudgetWrapper>
             <TabBar>
                 <TabButton selectedTab={selectedTab} name="category">create budget</TabButton>
@@ -51,10 +67,10 @@ export default function startBudget(props){
             </TabBar>
             <ContentBar>
                 {selectedTab === "createCategory" ?
-                    <CreateBudget changeTabCallback={changeTab}/> :
-                    <h1> hi </h1>
-                } 
+                    <CreateBudget changeTabCallback={changeTab} /> :
+                    <Subcategory category={parseURL(url)}/>
+                }
             </ContentBar>
         </BudgetWrapper>
-    );  
+    );
 }

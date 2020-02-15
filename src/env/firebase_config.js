@@ -63,6 +63,7 @@ const createTable = (data) => new Promise(resolve => {
     })
   });
 
+  //creates title for the table
   const createTitle = (data) => new Promise(resolve => {
     var userID = getCurrentUser().uid;
     firebase.database().ref('users/'+userID).update({title: data})
@@ -71,6 +72,7 @@ const createTable = (data) => new Promise(resolve => {
     })
   });
 
+  //creates main category 
   const createCategory =(data) => new Promise(resolve => {
     var userID = getCurrentUser().uid;
     firebase.database().ref('users/'+userID).update({category: data})
@@ -79,7 +81,15 @@ const createTable = (data) => new Promise(resolve => {
     })
   })
 
-//Reads from database.
+  //creates subcategory under main category
+  const createSubcategory = (userID, data) => new Promise(resolve => {
+    firebase.database().ref('users/'+userID).update({subcategory: data})
+    .then(()=>{
+      resolve(true);
+    })
+  })
+
+//Reads username from database.
 const readUsername = (userID) => new Promise(resolve => {
   firebase.database().ref('/users/' +userID).once('value')
     .then(function(snapshot){
@@ -87,6 +97,7 @@ const readUsername = (userID) => new Promise(resolve => {
   })
 }) ;
 
+//get title from database
 const readTitle =(userID) => new Promise(resolve => {
   firebase.database().ref('/users/' +userID+ '/title/').once('value')
     .then(function(snapshot){
@@ -94,9 +105,21 @@ const readTitle =(userID) => new Promise(resolve => {
   })
 }) ;
 
-//Writes to database.
-const writeData = (data) => {
-}
+//get category from database
+const getCategoryDetails =(userID) => new Promise(resolve => {
+  firebase.database().ref('/users/' +userID+ '/category/').once('value')
+  .then(function(snapshot){
+    resolve(snapshot.val());
+  })
+})
+
+//get subcategory from database
+const getSubcategoryDetails =(userID) => new Promise(resolve => {
+  firebase.database().ref('/users/' +userID+ '/subcategory/').once('value')
+  .then(function(snapshot){
+    resolve(snapshot.val());
+  })
+})
 
 //logout 
 const logout = () => new Promise(resolve => {
@@ -121,6 +144,7 @@ const signedUser = () => new Promise(resolve => {
     }
   })
 });
+
 export default {
   configureFirebase,
   signingInWithEmailandPassword,
@@ -131,7 +155,9 @@ export default {
   createCategory,
   readUsername,
   readTitle,
-  writeData,
   signedUser,
+  getCategoryDetails,
+  getSubcategoryDetails,
+  createSubcategory,
   logout
 };
