@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import TextField from '../components/TextField';
 import Colors from '../env/colors';
 import ICONS from '../env/ICONS';
+import {useHistory} from 'react-router-dom';
 import Icon from '../components/Icon';
 import db from '../env/firebase_config';
 
@@ -66,7 +67,7 @@ const CreateButton = styled.button`
     `;
 
 export default function subCategory(props) {
-
+    let history = useHistory();
     const category = props.category;
     const [subcategories, setSubcategories] = useState([]);
     const [selectedTab, setSelectedTab] = useState(0);
@@ -100,6 +101,7 @@ export default function subCategory(props) {
         let userid = db.getCurrentUser().uid;
         if(subcategories){
             await db.createSubcategory(userid, subcategories)
+            history.replace("/dashboard");
         }
     }
     const resetTextField = () => {

@@ -89,6 +89,14 @@ const createTable = (data) => new Promise(resolve => {
     })
   })
 
+  //creates user content
+  const createContent = (userID,data) => new Promise (resolve => {
+    firebase.database().ref('users/'+userID).update({Date: data})
+    .then(()=>{
+      resolve(true);
+    })
+  })
+
 //Reads username from database.
 const readUsername = (userID) => new Promise(resolve => {
   firebase.database().ref('/users/' +userID).once('value')
@@ -159,5 +167,6 @@ export default {
   getCategoryDetails,
   getSubcategoryDetails,
   createSubcategory,
-  logout
+  logout,
+  createContent
 };

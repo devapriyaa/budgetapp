@@ -12,7 +12,7 @@ const slideIn = keyframes`
 const slideOut = keyframes`
     from { height: 700px; }
     to { height: 0px; }
-`; 
+`;
 
 const Background = styled.div`
             position: relative;
@@ -75,36 +75,36 @@ const CloseIcon = styled.span`
            
         `;
 export default function Home(props) {
-        const [tabStatus,setTabStatus] = useState(false)
-        const openLoginPage = (e) => {
-            e.preventDefault();
-            props.LoginPageStatus(true);
-            if(e.target.name === "signup"){
-                setTabStatus("true")
-            }
+    const [tabStatus, setTabStatus] = useState(false)
+    const openLoginPage = (e) => {
+        e.preventDefault();
+        props.LoginPageStatus(true);
+        if (e.target.name === "signup") {
+            setTabStatus("true")
         }
-        const closeLoginPage = () => {
-            props.LoginPageStatus(false);
-        }
-        
-        return (
-            <>
-            {props.username ? 
-            <Background>
-            <h1>{props.username}</h1>
-        </Background>:
-            <Background>
-                <Title>Budget..Spend..Save</Title>
-                <LoginButton onClick={openLoginPage}>SIGN IN</LoginButton>
-                <NewAccount  name="signup" onClick={openLoginPage}>Join Us</NewAccount>
-                <LoginPage openLogin={props.openLogin}>
-                    <CloseIcon onClick={closeLoginPage}>
-                        <Icon color="black" icon="Close" width="40" height="40" />
-                    </CloseIcon>
-                    <Account Tab={tabStatus}/>
-                </LoginPage>
-            </Background> 
-            }
-            </>
-        );
     }
+    const closeLoginPage = () => {
+        props.LoginPageStatus(false);
+    }
+
+    return (
+        <>
+            {props.username ?
+                <Background>
+                    <h1>{props.username}</h1>
+                </Background> :
+                <Background>
+                    <Title>Budget..Spend..Save</Title>
+                    <LoginButton onClick={openLoginPage}>SIGN IN</LoginButton>
+                    <NewAccount name="signup" onClick={openLoginPage}>Join Us</NewAccount>
+                    <LoginPage openLogin={props.openLogin}>
+                        <CloseIcon onClick={closeLoginPage}>
+                            <Icon color="black" icon="Close" width="40" height="40" />
+                        </CloseIcon>
+                        <Account Tab={tabStatus} />
+                    </LoginPage>
+                </Background>
+            }
+        </>
+    );
+}
