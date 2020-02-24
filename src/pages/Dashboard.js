@@ -40,9 +40,7 @@ export default function Dashboard() {
     const [currentPageDate, setCurrentPageDate] = useState([]);
 
     const getCurrentDate =()=>{
-        let Month = new Date().getMonth();
-        let Year = new Date().getFullYear();
-        setCurrentPageDate([Month,Year])
+        
     }
 
     useEffect(() => {
