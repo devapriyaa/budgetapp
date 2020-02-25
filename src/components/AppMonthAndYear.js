@@ -4,12 +4,14 @@ import Icon from '../components/Icon';
 
 const ComponentWrapper = styled.div`
     display: grid;
-    grid-template-columns: 20% 60% 20%;
-    width: 30%
+    grid-template-columns: 1fr 2fr 1fr;
+    width: 100%
 `;
 const Arrows = styled.button`
     text-align: center;
     margin: auto;
+    border: none;
+    background: none;
 `;
 const DateWrapper = styled.div`
     display: grid;
@@ -35,41 +37,52 @@ const Month = styled.button`
 `;
 
 
-export default function AppMonthAndYear() {
+export default function AppMonthAndYear(props) {
     let months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-    const [currentPageMonth, setCurrentPageMonth] = useState();
-    const [currentPageYear, setCurrentPageYear] = useState();
+    let month = props.currentDate[0];
+    let year = props.currentDate[1];
 
-    useEffect(() => {
-        const getCurrentDate = () => {
-            let Month = new Date().getMonth();
-            let Year = new Date().getFullYear();
-            setCurrentPageMonth(Month)
-            setCurrentPageYear(Year);
-        }
-        getCurrentDate();
-    }, []);
+    const callbackFromChild = (date) => {
+        props.onGetCurrentPageDate(date);
+    }
 
     const handleOnClick = (e) => {
         let value = parseInt(e.currentTarget.value)
-        let name = e.currentTarget.name;
-        setCurrentPageMonth(value);
-        handleYear(value,name)
-    }
-
-    const handleYear = (value,name) => {
         let clickedMonth = months[value]
-        let typeOfButton = name;
-        if(clickedMonth === "DEC" && typeOfButton === "previous"){
-            setCurrentPageYear(currentPageYear-1)
+        let typeOfButton = e.currentTarget.name;
+        if(typeOfButton === "previous"){
+           if(clickedMonth === "DEC" ) {
+                let date = {
+                month : value,
+                year : year-1 
+            }
+                callbackFromChild(date)
+           }else{
+               let date ={
+                   month : value,
+                   year: year
+               }
+               callbackFromChild(date)
+           }
         }
-        if(clickedMonth === "JAN" && typeOfButton === "next") {
-            setCurrentPageYear(currentPageYear+1)
+        if(typeOfButton === "next"){
+            if(clickedMonth === "JAN" ) {
+                let date = {
+                month : value,
+                year : year+1 
+            }
+            callbackFromChild(date)
+           }else{
+               let date ={
+                   month : value,
+                   year: year
+               }
+               callbackFromChild(date)
+           }
         }
     }
-
     const validateMonth = (value, type) => {
-        let currentPage = currentPageMonth
+        let currentPage = month
         if (type === "previous") {
             let previousPage = currentPage - 1;
             if (previousPage < 0) {
@@ -88,20 +101,21 @@ export default function AppMonthAndYear() {
         }
     }
 
+
     return (
         <ComponentWrapper>
-            <Arrows value={validateMonth(currentPageMonth, "previous")} name = "previous" onClick = {handleOnClick}>
+            <Arrows value={validateMonth(month, "previous")} name = "previous" onClick = {handleOnClick}>
                 <Icon icon="Less_than" color="black" width="30" height="30" />
             </Arrows>
             <DateWrapper>
-                <Year>{currentPageYear}</Year>
+                <Year>{year}</Year>
                 <MonthWrapper>
-                    <Month value={validateMonth(currentPageMonth, "previous")} name = "previous" onClick={handleOnClick}>{months[validateMonth(currentPageMonth, "previous")]}</Month>
-                    <Month big_text="true">{months[currentPageMonth]}</Month>
-                    <Month value={validateMonth(currentPageMonth, "next")} name = "next" onClick={handleOnClick}>{months[validateMonth(currentPageMonth, "next")]}</Month>
+                    <Month value={validateMonth(month, "previous")} name = "previous" onClick={handleOnClick}>{months[validateMonth(month, "previous")]}</Month>
+                    <Month big_text="true">{months[month]}</Month>
+                    <Month value={validateMonth(month, "next")} name = "next" onClick={handleOnClick}>{months[validateMonth(month, "next")]}</Month>
                 </MonthWrapper>
             </DateWrapper>
-            <Arrows value={validateMonth(currentPageMonth, "next")} name = "next" onClick={handleOnClick}>
+            <Arrows value={validateMonth(month, "next")} name = "next" onClick={handleOnClick}>
                 <Icon icon="Greater_than" color="black" width="30" height="30" />
             </Arrows>
         </ComponentWrapper>

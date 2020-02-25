@@ -74,6 +74,7 @@ const CloseIcon = styled.span`
             left: 95%;
            
         `;
+
 export default function Home(props) {
     const [tabStatus, setTabStatus] = useState(false)
     const openLoginPage = (e) => {
@@ -91,7 +92,7 @@ export default function Home(props) {
         <>
             {props.username ?
                 <Background>
-                    <h1>{props.username}</h1>
+                    <Title>Budgeting Makes Life Easy</Title>
                 </Background> :
                 <Background>
                     <Title>Budget..Spend..Save</Title>

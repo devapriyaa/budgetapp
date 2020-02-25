@@ -132,6 +132,7 @@ export default function Account(props){
         }
         const loadStartBudget = async () => {
             const userID = firebaseOperation.getCurrentUser().uid;
+            console.log(userID)
             const category = await firebaseOperation.getCategoryDetails(userID);
             const subcategory = await firebaseOperation.getSubcategoryDetails(userID);
             if(category === null || subcategory === null) {

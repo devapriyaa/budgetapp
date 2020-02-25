@@ -42,6 +42,7 @@ const StyledLink = styled(Link)`
 export default function App() {
     const [openLogin, setOpenLogin] = useState(false);
     const [username, setUsername] = useState();
+    const [uid, setUid] = useState();
     const currentPath = window.location.pathname;
 
     const checkAccount = () => {
@@ -60,11 +61,13 @@ export default function App() {
     useEffect(() => {
         async function fetchData() {
             let result = await db.signedUser();
+            console.log(result)
             if (result) {
                 let userID = db.getCurrentUser().uid;
                 let username =await db.readUsername(userID);
                 if(username){
-                    setUsername(username.username);    
+                    setUsername(username.username); 
+                    setUid(userID);   
                 }
             }
             else {
@@ -72,7 +75,7 @@ export default function App() {
             }
         }
         fetchData();
-    });
+    }, []);
     
     return (
         <Router>
@@ -103,7 +106,7 @@ export default function App() {
                         <AccountDetails />
                     </Route>
                     <Route path="/">
-                        <Home username={username} LoginPageStatus = {getLoginPageStatus} openLogin = {openLogin}/>
+                        <Home username={username} userid={uid} LoginPageStatus = {getLoginPageStatus} openLogin = {openLogin}/>
                     </Route>
                 </Switch>
             </div>

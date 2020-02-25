@@ -26,9 +26,17 @@ export default function TextWrapper(props) {
     const onBlurHandle = (e) => {
         let value = e.target.value;
         let name = e.target.name;
-        setShowInputField(false)
-        setInput(value);
-        props.callback(value,name) 
+        let type = e.target.id;
+        if(value){
+            setShowInputField(false)
+            setInput(value);
+        }
+        let user_data = {
+            value: value,
+            name: name,
+            type: type
+        }
+        props.onBlurCallback(user_data) 
     }
     const onHandleClick =()=>{
         setShowInputField(true)
@@ -36,12 +44,12 @@ export default function TextWrapper(props) {
 
     return <TextComponent>
         <Content>{props.name}</Content>
-        {props.defaultValue ?
-            <DefaultValue>{props.defaultValue}</DefaultValue> : 
+        {props.showDefault ?
+            <DefaultValue>{props.value}</DefaultValue> : 
             null
         }
         {showInputField ? 
-            <InputValue type="text" name={props.name} onKeyPress={handleKeyPress} onBlur={onBlurHandle}/> :
+            <InputValue type="text" name={props.name} onKeyPress={handleKeyPress} id={props.id} onBlur={onBlurHandle}/> :
             <DefaultValue onClick={onHandleClick}>{input}</DefaultValue>   
         }
     </TextComponent>
