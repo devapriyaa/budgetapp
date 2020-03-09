@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import db from '../env/firebase_config';
 import color from '../env/colors';
-import TextWrapper from '../components/TextWrapper';
 import AppMonthPagination from '../components/AppMonthAndYear';
+import TextWrapper from '../components/TextWrapper';
+import Icon from '../components/Icon';
+
 
 const PageWrapper = styled.div`
-    border: 1px solid;
     display: grid;
     grid-template-rows: 1fr;
+    grid-gap:10px;
 `;
 const CurrentPageMenu = styled.div``;
 const DatePagination = styled.div`
@@ -16,148 +18,303 @@ const DatePagination = styled.div`
 `;
 const BudgetWrapper = styled.div`
     display: grid;
-    grid-template-areas: 'Holding Spending';
-    grid-gap: 10px;
+    grid-template-columns: 1fr 1fr 1fr;
     padding: 10px;
 `;
-const Holding = styled.div``;
-const Spending = styled.div``;
-const CategoryWrapper = styled.div`
+const Holding = styled.div`
     border: 1px solid;
 `;
+const Spending = styled.div`
+    border: 1px solid;
+`;
+const CategoryWrapper = styled.div`
+    display: grid;
+    grid-template-rows: auto;
+    width: 80%;
+    margin: auto
+    border: 1.5px solid ${color.grey.light_grey};
+    border-radius: 5px;
+    padding-top: 5px;
+`;
+const Category = styled.button`
+    height: auto;
+    display : grid
+    grid-template-columns: 95% 5%;
+    text-align: left;
+    border: none;
+`;
+const MenuButton = styled.button`
+    padding-top: 10px;
+    border: none;
+    &:active{
+        outline: none;
+    }
+    &:focus {outline:0;}
+`;
+
 const CategoryName = styled.div`
-    background: ${color.grey.dark_grey};
+    font: 20px 'Quicksand', sans-serif ;
+    color: ${color.grey.dark_grey}  
 `;
 const SubcategoryWrapper = styled.div`
-    border: 1px solid;
+    border: none;
     display: grid;
-    grid-template-rows: 1fr;
+    grid-template-rows: auto;
+   height: auto;
+   display: inline;
 `;
-const SubcategoryName = styled.div`
-   background : ${props => props.subItemIndex % 2 === 0 ? color.grey.dark_grey : color.grey.light_grey}
+const SumbitButton = styled.button`
+    
 `;
-const SumbitButton = styled.button``;
+
 
 export default function Dashboard() {
-    const [category, setCategory] = useState([]);
-    const [subcategory, setSubcategory] = useState([]);
+    const [budgetData, setCategory] = useState([]);
+    const [userData, setUserData] = useState([]);
     const [currentPageDate, setCurrentPageDate] = useState([]);
-    const [userSubData, setUserSubData] = useState([]);
-    const [userTrackingData, setUserTrackingData] = useState([]);
+    let arrayOfBudgetCategory = (Object.values(budgetData))[0];
+    let arrayOfBudgetSubcategory = (Object.values(budgetData))[1];
+    const [showSubcategory, setShowSubcategory] = useState(false);
+    const [clickedCategory, setClickedCategory] = useState([]);
 
-    const getDetails = async (prop) => {
-        let userID = prop;
+
+    const getDetails = async (userID, date) => {
         let categoryDetails = await db.getCategoryDetails(userID);
         let subcategoryDetails = await db.getSubcategoryDetails(userID);
-        let Month = new Date().getMonth();
-        let Year = new Date().getFullYear();
-        setCurrentPageDate([Month, Year])
-        if (categoryDetails) {
-            setCategory(categoryDetails);
+        if (categoryDetails && subcategoryDetails) {
+            setCategory({
+                category: categoryDetails,
+                subcategory: subcategoryDetails
+            });
         };
-        if (subcategoryDetails) {
-            setSubcategory(subcategoryDetails);
-        }
     }
-
-    useEffect(() => {
-        async function intialize() {
-            let result = await db.signedUser();
-            if (result) {
-                let userID = db.getCurrentUser().uid;
-                getDetails(userID);
-            }
-        }
-        intialize()
-    }, [])
-
-    const findValue = (name) => {
-        userSubData.map((item, index) => {
-            if (item.includes(name)) {
-                return true;
+    const getUserDetails = async (userID, date) => {
+        let userdata = await db.getUserContent(userID, date.join(':'));
+        if (userdata) {
+            let data = Object.values(userdata)[0]
+            let sub_data = Object.values(data)[0];
+            let tracking_data = Object.values(data)[1];
+            if (sub_data && tracking_data) {
+                console.log("user data available")
+                setUserData({
+                    userSubData: sub_data,
+                    userTrackingData: tracking_data
+                })
             } else {
-                return false;
+                console.log("no data")
+                setUserData({
+                    userSubData: null,
+                    userTrackingData: null
+                })
             }
-        });
+        }
+    }
+    const dateCallBackParent = async (props) => {
+        let result = await db.signedUser();
+        if (result) {
+            let userID = db.getCurrentUser().uid;
+            let date = (Object.values(props))
+
+            setCurrentPageDate(date)
+            getDetails(userID, date)
+            getUserDetails(userID, date);
+
+        }
     }
 
-    const dateCallBackParent = (props) => {
-        let date = props;
-        setCurrentPageDate(Object.values(date))
+    const findIndex = (data, name) => {
+        let givenData = Object.values(data);
+        let result = givenData.map(item => {
+            let result = item.includes(name)
+            return result;
+        })
+        return (result.includes(true) ? result.indexOf(true) : -1)
     }
+
+    const getElement = (name, type) => {
+        let data = userData;
+        if (data) {
+            let sub_data = (Object.values(data))[0]
+            let tracking_data = (Object.values(data))[1]
+            if ("tracking_data" === type) {
+                if (tracking_data) {
+                    let value = tracking_data.map(data => {
+                        if (data.includes(name)) {
+                            return (data[1])
+                        }
+                    })
+                    return (value.find(element => element > 0))
+                }
+            }
+            if ("sub_data" === type) {
+                if (sub_data) {
+                    let value = sub_data.map(data => {
+                        if (data.includes(name)) {
+                            return (data[1])
+                        }
+                    })
+                    return (value.find(element => element > 0))
+                }
+            }
+        }
+    }
+
     const inputCallBackFromParent = async (props) => {
-        // let userID = db.getCurrentUser().uid;
-        // let result = await db.createContent(userID,currentPageDate);
-        // if(result){
-
-        // }
         let user_data = Object.values(props);
-        let sub_data = user_data[2];
-        if (sub_data === "sub_data") {
-            let name = user_data[1];
-            let value = user_data[0];
-
+        let value = user_data[0];
+        let name = user_data[1];
+        let type = user_data[2];
+        let userSubData = (Object.values(userData))[0];
+        let userTrackingData = (Object.values(userData))[1];
+        if (type === "sub_data") {
             if (value) {
-                let newData = [name, value]
-                if (userSubData.length < 1) {
-                    let newArray = userSubData.concat([newData])
-                    setUserSubData(newArray)
-                    console.log("createing new array")
+                if (userSubData === null) {
+                    let userSubData = ([[name, value]])
+                    let data = {
+                        subData: userSubData,
+                        trackingData: userTrackingData
+                    }
+                    setUserData(data)
+                    console.log("creating new data")
                 } else {
-                    let index = userSubData.findIndex(element => element[0] === name)
+                    let index = (findIndex(userSubData, name));
                     if (index > -1) {
-                        let newArray = userSubData.slice();
-                        newArray.splice(index, 1, newData)
-                        setUserSubData(newArray);
+                        let duplicateArray = userSubData.slice();
+                        let newData = [name, value]
+                        duplicateArray.splice(index, 1, newData)
+                        let data = {
+                            subData: duplicateArray,
+                            trackingData: userTrackingData
+                        }
+                        setUserData(data);
                         console.log("replaced")
                     } else {
                         console.log("adding to old array");
-                        let newArray = userSubData.concat([newData])
-                        setUserSubData(newArray)
+                        userSubData.push([name, value]);
+                        let data = {
+                            subData: userSubData,
+                            trackingData: userTrackingData
+                        }
+                        setUserData(data)
                     }
+                }
+
+            }
+        } else {
+            if (value) {
+                if (userTrackingData === null) {
+                    let userTrackingData = ([[name, value]])
+                    let data = {
+                        subData: userSubData,
+                        trackingData: userTrackingData
+                    }
+                    setUserData(data)
+                    console.log("creating new data")
+                }
+            }
+            else {
+                let index = (findIndex(userTrackingData, name));
+                if (index > -1) {
+                    let duplicateArray = userTrackingData.slice();
+                    let newData = [name, value]
+                    duplicateArray.splice(index, 1, newData)
+                    let data = {
+                        subData: userSubData,
+                        trackingData: duplicateArray
+                    }
+                    setUserData(data);
+                    console.log("replaced")
+                } else {
+                    console.log("adding to old array");
+                    userTrackingData.push([name, value]);
+                    let data = {
+                        subData: userSubData,
+                        trackingData: userTrackingData
+                    }
+                    setUserData(data)
+                }
+            }
+        }
+    }
+
+    const handleOnClickSubcategory = (e) => {
+        let name = e.target.innerText
+        setClickedCategory([...clickedCategory, name]);
+        
+    }
+    const handleOnClickSubmit = async () => {
+        let userID = db.getCurrentUser().uid;
+        let currentDate = currentPageDate.join(':')
+        let currentDateValue = await db.getUserContent(userID, currentDate)
+        if (currentDateValue) {
+            //adds new values to the list
+            if ((Object.values(userData)[0].length) > 0 || (Object.values(userData)[1].length) > 0) {
+                let result = await db.updateUserContent(userID, userData, currentDate);
+                if (result) {
+                    console.log("content updated");
                 }
             }
         } else {
-            let newData = [user_data[0], user_data[1]]
-            let newArray = userSubData.concat(newData)
-            setUserTrackingData([newArray])
+            if ((Object.values(userData)[0].length) > 0 || (Object.values(userData)[1].length) > 0) {
+                let result = await db.createUserContent(userID, userData, currentDate);
+                if (result) {
+                    console.log("content stored")
+                }
+            }
         }
     }
-    console.log(userSubData)
     return (
         <PageWrapper>
             <CurrentPageMenu>print</CurrentPageMenu>
-            <DatePagination>
-                <AppMonthPagination onGetCurrentPageDate={dateCallBackParent} currentDate={currentPageDate} />
-            </DatePagination>
             <BudgetWrapper>
                 <Holding>
-                    <TextWrapper name="Earning" onBlurCallback={inputCallBackFromParent} />
-                    <TextWrapper name="Saving" onBlurCallback={inputCallBackFromParent} />
+                    <TextWrapper name="Earning" id="tracking_data" value={getElement("Earning", "tracking_data") ? getElement("Earning", "tracking_data") : null} onBlurCallback={inputCallBackFromParent} />
+                    <TextWrapper name="Saving" id="tracking_data" value={getElement("Saving", "tracking_data") ? getElement("Saving", "tracking_data") : null} onBlurCallback={inputCallBackFromParent} />
                 </Holding>
+                <DatePagination>
+                    <AppMonthPagination onGetCurrentPageDate={dateCallBackParent} />
+                </DatePagination >
                 <Spending>
-                    <TextWrapper name="Budget" onBlurCallback={inputCallBackFromParent} />
-                    <TextWrapper name="Spent" onBlurCallback={inputCallBackFromParent} />
+                    <TextWrapper name="Budget" id="tracking_data" value={getElement("Budget", "tracking_data") ? getElement("Budget", "tracking_data") : null} onBlurCallback={inputCallBackFromParent} />
+                    <TextWrapper name="Spent" id="tracking_data" value={getElement("Spent", "tracking_data") ? getElement("Spent", "tracking_data") : null} onBlurCallback={inputCallBackFromParent} />
                 </Spending>
             </BudgetWrapper>
-            {category.map(item => {
-                let numberOfSubcategory = 0;
-                return <CategoryWrapper>
-                    <CategoryName>{item}</CategoryName>
-                    <SubcategoryWrapper>
-                        {subcategory.map((subItem, index) => {
-                            if (category.indexOf(item) === subItem.categoryNo) {
-                                let subcategories = subItem.subcategory;
-                                ++numberOfSubcategory;
-                                return <SubcategoryName subItemIndex={numberOfSubcategory}>
-                                    <TextWrapper name={subcategories[0]} id="sub_data" showDefault={true} value={subcategories[1]} onBlurCallback={inputCallBackFromParent} />
-                                </SubcategoryName>
-                            }
-                        })}
-                    </SubcategoryWrapper>
+
+            {arrayOfBudgetCategory ? arrayOfBudgetCategory.map((item, catindex) => {
+                return <CategoryWrapper key={catindex}>
+                    <Category onClick={handleOnClickSubcategory}>
+                        <CategoryName>{Object.values(item)}</CategoryName>
+                        <MenuButton>
+                            <Icon icon={"Menu"} color={color.grey.dark_grey} width="30" height="30" />
+                        </MenuButton>
+                    </Category>
+                    <SubcategoryWrapper showSubcategory={showSubcategory}>
+                        {(arrayOfBudgetSubcategory) ?
+                            clickedCategory.map(element => {
+                                if (element === item) {
+                                    return arrayOfBudgetSubcategory.map((subcategory,subindex)=>{
+                                        if((Object.values(subcategory))[0] === catindex){   
+                                            let data =((Object.values(subcategory))[1])
+                                            return <TextWrapper 
+                                                        name={data[0]} 
+                                                        id="sub_data" 
+                                                        value={(getElement(data[0], "sub_data")) ? (getElement(data[0], "sub_data")) : null} 
+                                                        budgetValue={data[1]} 
+                                                        onBlurCallback={inputCallBackFromParent}
+                                                    />
+                                        }else{
+                                            return null;
+                                        }
+                                    })
+                                }else{
+                                    return null;
+                                }
+                        }):null}
+                        </SubcategoryWrapper>
                 </CategoryWrapper>
-            })}
-            <SumbitButton>Sumbit</SumbitButton>
+            }) : null
+            }
+            <SumbitButton onClick={handleOnClickSubmit}>Sumbit</SumbitButton>
         </PageWrapper>
     );
 }

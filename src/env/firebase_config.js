@@ -16,7 +16,7 @@ function configureFirebase() {
 }
 
 //Sign in function
-  const signingInWithEmailandPassword = (user) => new Promise(resolve => {
+const signingInWithEmailandPassword = (user) => new Promise(resolve => {
   const email = user.userEmail;
   const password = user.userPassword;
   firebase.auth().signInWithEmailAndPassword(email, password)
@@ -31,19 +31,19 @@ function configureFirebase() {
         alert(errorMessage);
       }
       console.log(error);
-    }); 
+    });
 });
 
 //Creates new user
 const signingUpWithEmailandPassword = (user) => new Promise(resolve => {
   const email = user.userEmail;
   const password = user.userPassword;
-   firebase.auth().createUserWithEmailAndPassword(email, password)
-    .then(function (firebaseUser){
+  firebase.auth().createUserWithEmailAndPassword(email, password)
+    .then(function (firebaseUser) {
       resolve(true);
       console.log("account created")
     })
-    .catch((error)=>{
+    .catch((error) => {
       console.log(error);
     })
 });
@@ -56,98 +56,115 @@ const getCurrentUser = () => {
 
 //create new table
 const createTable = (data) => new Promise(resolve => {
-    var userID = getCurrentUser().uid;
-    firebase.database().ref('users/'+userID).set({username:data})
-    .then(()=>{
+  var userID = getCurrentUser().uid;
+  firebase.database().ref('users/' + userID).set({ username: data })
+    .then(() => {
       resolve(true)
     })
-  });
+});
 
-  //creates title for the table
-  const createTitle = (data) => new Promise(resolve => {
-    var userID = getCurrentUser().uid;
-    firebase.database().ref('users/'+userID).update({title: data})
-    .then(()=>{
+//creates title for the table
+const createTitle = (data) => new Promise(resolve => {
+  var userID = getCurrentUser().uid;
+  firebase.database().ref('users/' + userID).update({ title: data })
+    .then(() => {
       resolve(true)
     })
-  });
+});
 
-  //creates main category 
-  const createCategory =(data) => new Promise(resolve => {
-    var userID = getCurrentUser().uid;
-    firebase.database().ref('users/'+userID).update({category: data})
-    .then(()=>{
+//creates main category 
+const createCategory = (data) => new Promise(resolve => {
+  var userID = getCurrentUser().uid;
+  firebase.database().ref('users/' + userID).update({ category: data })
+    .then(() => {
       resolve(true)
     })
-  })
+})
 
-  //creates subcategory under main category
-  const createSubcategory = (userID, data) => new Promise(resolve => {
-    firebase.database().ref('users/'+userID).update({subcategory: data})
-    .then(()=>{
+//creates subcategory under main category
+const createSubcategory = (userID, data) => new Promise(resolve => {
+  firebase.database().ref('users/' + userID).update({ subcategory: data })
+    .then(() => {
       resolve(true);
     })
-  })
+})
 
-  //creates user content
-  const createContent = (userID,data) => new Promise (resolve => {
-    firebase.database().ref('users/'+userID).update({Date: data})
-    .then(()=>{
+
+//create new user content
+const createUserContent = (userID, data, currentDate) => new Promise(resolve => {
+  firebase.database().ref('users/' + userID + '/userContent/' + currentDate).set({data})
+    .then(() => {
       resolve(true);
     })
-  })
+})
 
+//adds new user content to the list
+const updateUserContent = (userID, data, currentDate) => new Promise(resolve => {
+  firebase.database().ref('users/' + userID + '/userContent/' + currentDate).update({data})
+    .then(() => {
+      resolve(true);
+    })
+})
 //Reads username from database.
 const readUsername = (userID) => new Promise(resolve => {
-  firebase.database().ref('/users/' +userID).once('value')
-    .then(function(snapshot){
+  firebase.database().ref('/users/' + userID).once('value')
+    .then(function (snapshot) {
       resolve(snapshot.val());
-  })
-}) ;
+    })
+});
 
 //get title from database
-const readTitle =(userID) => new Promise(resolve => {
-  firebase.database().ref('/users/' +userID+ '/title/').once('value')
-    .then(function(snapshot){
+const readTitle = (userID) => new Promise(resolve => {
+  firebase.database().ref('/users/' + userID + '/title/').once('value')
+    .then(function (snapshot) {
       resolve(snapshot.val());
-  })
-}) ;
+    })
+});
 
 //get category from database
-const getCategoryDetails =(userID) => new Promise(resolve => {
-  firebase.database().ref('/users/' +userID+ '/category/').once('value')
-  .then(function(snapshot){
-    resolve(snapshot.val());
-  })
+const getCategoryDetails = (userID) => new Promise(resolve => {
+  firebase.database().ref('/users/' + userID + '/category/').once('value')
+    .then(function (snapshot) {
+      resolve(snapshot.val());
+    })
 })
 
 //get subcategory from database
-const getSubcategoryDetails =(userID) => new Promise(resolve => {
-  firebase.database().ref('/users/' +userID+ '/subcategory/').once('value')
-  .then(function(snapshot){
+const getSubcategoryDetails = (userID) => new Promise(resolve => {
+  firebase.database().ref('/users/' + userID + '/subcategory/').once('value')
+    .then(function (snapshot) {
+      resolve(snapshot.val());
+    })
+})
+
+//read user content
+const getUserContent = (userID,currentDate) => new Promise (resolve => {
+  firebase.database().ref('/users/'+userID+'/userContent/'+currentDate).once('value', function (snapshot){
     resolve(snapshot.val());
+    console.log(snapshot.val())
   })
 })
 
 //logout 
 const logout = () => new Promise(resolve => {
   firebase.auth().signOut()
-  .then(()=>{
-    resolve(true)
-  })
-  .catch((error)=>{
-    resolve(false)
-    console.log(error);
-  })
+    .then(() => {
+      resolve(true)
+    })
+    .catch((error) => {
+      resolve(false)
+      console.log(error);
+    })
 });
+
 
 //get current signed user
 const signedUser = () => new Promise(resolve => {
-  firebase.auth().onAuthStateChanged((user)=>{
-    if(user){
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
       resolve(true);
     }
-    else{
+    else {
       resolve(false);
     }
   })
@@ -168,5 +185,7 @@ export default {
   getSubcategoryDetails,
   createSubcategory,
   logout,
-  createContent
+  createUserContent,
+  updateUserContent,
+  getUserContent
 };

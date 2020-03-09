@@ -61,7 +61,6 @@ export default function App() {
     useEffect(() => {
         async function fetchData() {
             let result = await db.signedUser();
-            console.log(result)
             if (result) {
                 let userID = db.getCurrentUser().uid;
                 let username =await db.readUsername(userID);

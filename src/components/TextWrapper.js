@@ -11,47 +11,37 @@ const InputValue = styled.input``;
 
 
 export default function TextWrapper(props) {
-    const [showInputField, setShowInputField] = useState(true);
-    const [input, setInput] = useState();
-
+    let input = props.value
+    const [showInput, setShowInput] = useState(input);
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             let value = e.target.value;
             let name = e.target.name;
-            setShowInputField(false)
-            setInput(value);
-            props.callback(value,name)
+            props.callback(value, name)
         }
     }
     const onBlurHandle = (e) => {
         let value = e.target.value;
         let name = e.target.name;
         let type = e.target.id;
-        if(value){
-            setShowInputField(false)
-            setInput(value);
-        }
         let user_data = {
             value: value,
             name: name,
             type: type
         }
-        props.onBlurCallback(user_data) 
+        props.onBlurCallback(user_data)
     }
-    const onHandleClick =()=>{
-        setShowInputField(true)
+    const onHandleClick = () => {
+        setShowInput(null)
     }
-
+    console.log(props.value)
     return <TextComponent>
         <Content>{props.name}</Content>
-        {props.showDefault ?
-            <DefaultValue>{props.value}</DefaultValue> : 
+        {props.budgetValue ?
+            <DefaultValue>{props.budgetValue}</DefaultValue> :
             null
         }
-        {showInputField ? 
-            <InputValue type="text" name={props.name} onKeyPress={handleKeyPress} id={props.id} onBlur={onBlurHandle}/> :
-            <DefaultValue onClick={onHandleClick}>{input}</DefaultValue>   
-        }
+        <InputValue type="text" name={props.name} defaultValue={props.value} onKeyPress={handleKeyPress} id={props.id} onBlur={onBlurHandle} />
     </TextComponent>
 
 }

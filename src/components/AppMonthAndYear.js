@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Icon from '../components/Icon';
 
@@ -39,13 +39,20 @@ const Month = styled.button`
 
 export default function AppMonthAndYear(props) {
     let months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-    let month = props.currentDate[0];
-    let year = props.currentDate[1];
+    let month = new Date().getMonth();
+    let year = new Date().getFullYear();
+    const [currentMonth, setCurrentMonth] = useState(month);
+    const [currentYear, setCurrentYear] = useState(year)
 
     const callbackFromChild = (date) => {
         props.onGetCurrentPageDate(date);
     }
 
+    useEffect(()=>{
+        let date = [month,year]
+        callbackFromChild(date);
+    },[])
+ 
     const handleOnClick = (e) => {
         let value = parseInt(e.currentTarget.value)
         let clickedMonth = months[value]
@@ -54,35 +61,43 @@ export default function AppMonthAndYear(props) {
            if(clickedMonth === "DEC" ) {
                 let date = {
                 month : value,
-                year : year-1 
+                year : currentYear-1 
             }
                 callbackFromChild(date)
+                setCurrentMonth(value)
+                setCurrentYear(currentYear-1)
            }else{
                let date ={
                    month : value,
-                   year: year
+                   year: currentYear
                }
                callbackFromChild(date)
+               setCurrentMonth(value)
+                setCurrentYear(currentYear)
            }
         }
         if(typeOfButton === "next"){
             if(clickedMonth === "JAN" ) {
                 let date = {
                 month : value,
-                year : year+1 
+                year : currentYear+1 
             }
             callbackFromChild(date)
+            setCurrentMonth(value)
+                setCurrentYear(currentYear+1)
            }else{
                let date ={
                    month : value,
-                   year: year
+                   year: currentYear
                }
                callbackFromChild(date)
+               setCurrentMonth(value)
+                setCurrentYear(currentYear)
            }
         }
     }
     const validateMonth = (value, type) => {
-        let currentPage = month
+        let currentPage = currentMonth
         if (type === "previous") {
             let previousPage = currentPage - 1;
             if (previousPage < 0) {
@@ -104,18 +119,18 @@ export default function AppMonthAndYear(props) {
 
     return (
         <ComponentWrapper>
-            <Arrows value={validateMonth(month, "previous")} name = "previous" onClick = {handleOnClick}>
+            <Arrows value={validateMonth(currentMonth, "previous")} name = "previous" onClick = {handleOnClick}>
                 <Icon icon="Less_than" color="black" width="30" height="30" />
             </Arrows>
             <DateWrapper>
                 <Year>{year}</Year>
                 <MonthWrapper>
-                    <Month value={validateMonth(month, "previous")} name = "previous" onClick={handleOnClick}>{months[validateMonth(month, "previous")]}</Month>
-                    <Month big_text="true">{months[month]}</Month>
-                    <Month value={validateMonth(month, "next")} name = "next" onClick={handleOnClick}>{months[validateMonth(month, "next")]}</Month>
+                    <Month value={validateMonth(currentMonth, "previous")} name = "previous" onClick={handleOnClick}>{months[validateMonth(currentMonth, "previous")]}</Month>
+                    <Month big_text="true">{months[currentMonth]}</Month>
+                    <Month value={validateMonth(currentMonth, "next")} name = "next" onClick={handleOnClick}>{months[validateMonth(currentMonth, "next")]}</Month>
                 </MonthWrapper>
             </DateWrapper>
-            <Arrows value={validateMonth(month, "next")} name = "next" onClick={handleOnClick}>
+            <Arrows value={validateMonth(currentMonth, "next")} name = "next" onClick={handleOnClick}>
                 <Icon icon="Greater_than" color="black" width="30" height="30" />
             </Arrows>
         </ComponentWrapper>
