@@ -30,41 +30,62 @@ const Spending = styled.div`
 const CategoryWrapper = styled.div`
     display: grid;
     grid-template-rows: auto;
-    width: 80%;
+    width: 40%;
     margin: auto
     border: 1.5px solid ${color.grey.light_grey};
     border-radius: 5px;
-    padding-top: 5px;
+    overflow: visible;
 `;
-const Category = styled.button`
+const Category = styled.div`
     height: auto;
     display : grid
-    grid-template-columns: 95% 5%;
-    text-align: left;
-    border: none;
+    grid-template-columns: 55% 20% 10% 5%;
+    grid-gap: 10px;
+    padding: 3px 10px;
 `;
 const MenuButton = styled.button`
     padding-top: 10px;
     border: none;
+    background: none;
     &:active{
         outline: none;
     }
     &:focus {outline:0;}
 `;
 
-const CategoryName = styled.div`
+const CategoryName = styled.button`
+    text-align: left;
     font: 20px 'Quicksand', sans-serif ;
     color: ${color.grey.dark_grey}  
+    background: none;
+    border: none
+    &:active{
+        outline: none;
+    }
+    &:focus {outline:0;}
+`;
+
+const SubTitle = styled.div`
+    text-align: center;
+    font: 15px 'Quicksand', sans-serif ;
+    color: ${color.grey.light_grey} ;
+    padding: 10px;
 `;
 const SubcategoryWrapper = styled.div`
     border: none;
     display: grid;
     grid-template-rows: auto;
-   height: auto;
-   display: inline;
+    height: ${p => p.showSubcategory ? 'auto' : '0px'};
+    display: ${p => p.showSubcategory ? 'inline' : 'hidden'};
 `;
 const SumbitButton = styled.button`
-    
+    width: 40%;
+    height: 50px;
+    margin: 0 auto;
+    border: 1.5px solid ${color.grey.light_grey};
+    border-radius: 5px;
+    font: 20px 'Quicksand', sans-serif ;
+    color: ${color.grey.dark_grey}  
 `;
 
 
@@ -239,8 +260,15 @@ export default function Dashboard() {
 
     const handleOnClickSubcategory = (e) => {
         let name = e.target.innerText
-        setClickedCategory([...clickedCategory, name]);
-        
+        if (clickedCategory.includes(name)) {
+            let index = clickedCategory.findIndex(element => element === name);
+            clickedCategory.splice(index, 1)
+            setClickedCategory(clickedCategory)
+            setShowSubcategory(false)
+        } else {
+            setClickedCategory([...clickedCategory, name]);
+            setShowSubcategory(true)
+        }
     }
     const handleOnClickSubmit = async () => {
         let userID = db.getCurrentUser().uid;
@@ -282,8 +310,10 @@ export default function Dashboard() {
 
             {arrayOfBudgetCategory ? arrayOfBudgetCategory.map((item, catindex) => {
                 return <CategoryWrapper key={catindex}>
-                    <Category onClick={handleOnClickSubcategory}>
-                        <CategoryName>{Object.values(item)}</CategoryName>
+                    <Category >
+                        <CategoryName onClick={handleOnClickSubcategory}>{Object.values(item)}</CategoryName>
+                        <SubTitle>Budgeted</SubTitle>
+                        <SubTitle>Spent</SubTitle>
                         <MenuButton>
                             <Icon icon={"Menu"} color={color.grey.dark_grey} width="30" height="30" />
                         </MenuButton>
@@ -292,25 +322,25 @@ export default function Dashboard() {
                         {(arrayOfBudgetSubcategory) ?
                             clickedCategory.map(element => {
                                 if (element === item) {
-                                    return arrayOfBudgetSubcategory.map((subcategory,subindex)=>{
-                                        if((Object.values(subcategory))[0] === catindex){   
-                                            let data =((Object.values(subcategory))[1])
-                                            return <TextWrapper 
-                                                        name={data[0]} 
-                                                        id="sub_data" 
-                                                        value={(getElement(data[0], "sub_data")) ? (getElement(data[0], "sub_data")) : null} 
-                                                        budgetValue={data[1]} 
-                                                        onBlurCallback={inputCallBackFromParent}
-                                                    />
-                                        }else{
+                                    return arrayOfBudgetSubcategory.map((subcategory, subindex) => {
+                                        if ((Object.values(subcategory))[0] === catindex) {
+                                            let data = ((Object.values(subcategory))[1])
+                                            return <TextWrapper
+                                                name={data[0]}
+                                                id="sub_data"
+                                                value={(getElement(data[0], "sub_data")) ? (getElement(data[0], "sub_data")) : null}
+                                                budgetValue={data[1]}
+                                                onBlurCallback={inputCallBackFromParent}
+                                            />
+                                        } else {
                                             return null;
                                         }
                                     })
-                                }else{
+                                } else {
                                     return null;
                                 }
-                        }):null}
-                        </SubcategoryWrapper>
+                            }) : null}
+                    </SubcategoryWrapper>
                 </CategoryWrapper>
             }) : null
             }

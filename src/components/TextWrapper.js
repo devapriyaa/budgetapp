@@ -1,14 +1,43 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import color from '../env/colors';
+import Icon from '../components/Icon'
 
 const TextComponent = styled.div`
     display: grid;
-    grid-template-columns: 60% 20% 20%;
+    grid-template-columns: 55% 20% 10% 5%;
+    grid-gap: 10px;
+    padding: 3px 10px;
 `;
-const Content = styled.div``;
-const DefaultValue = styled.div``;
-const InputValue = styled.input``;
-
+const Content = styled.div`
+    padding-top: 5px; 
+    padding-left: 10px;  
+    font: 15px 'Quicksand', sans-serif ;
+    color: ${color.grey.dark_grey} ; 
+`;
+const DefaultValue = styled.div`
+    text-align: center;
+    padding-top: 5px;
+    font: 15px 'Quicksand', sans-serif ;
+    color: ${color.grey.dark_grey} ;
+`;
+const InputValue = styled.input`
+    padding-top: 5px;
+    height: 20px;
+    width: 90%;
+    margin: 0 auto;
+    text-align: center;
+    border: none;
+    border-bottom: 1px solid black;
+    font: 15px 'Quicksand', sans-serif ;
+    color: ${color.grey.dark_grey} ;
+`;
+const DeleteButton = styled.button`
+    padding-top: 5px;
+    text-align: center;
+    background: none;
+    border: none;
+`;
 
 export default function TextWrapper(props) {
     let input = props.value
@@ -34,7 +63,7 @@ export default function TextWrapper(props) {
     const onHandleClick = () => {
         setShowInput(null)
     }
-    console.log(props.value)
+
     return <TextComponent>
         <Content>{props.name}</Content>
         {props.budgetValue ?
@@ -42,6 +71,9 @@ export default function TextWrapper(props) {
             null
         }
         <InputValue type="text" name={props.name} defaultValue={props.value} onKeyPress={handleKeyPress} id={props.id} onBlur={onBlurHandle} />
+        <DeleteButton>
+            <Icon icon="Delete" color={color.grey.light_grey} width="30" height="30" /> 
+        </DeleteButton>
     </TextComponent>
 
 }
