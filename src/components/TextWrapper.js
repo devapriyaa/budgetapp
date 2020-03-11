@@ -5,7 +5,7 @@ import Icon from '../components/Icon'
 
 const TextComponent = styled.div`
     display: grid;
-    grid-template-columns: 55% 20% 10% 5%;
+    grid-template-columns: 50% 20% 10% 5%;
     grid-gap: 10px;
     padding: 3px 10px;
 `;

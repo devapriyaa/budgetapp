@@ -39,7 +39,7 @@ const CategoryWrapper = styled.div`
 const Category = styled.div`
     height: auto;
     display : grid
-    grid-template-columns: 55% 20% 10% 5%;
+    grid-template-columns: 50% 20% 15% 5%;
     grid-gap: 10px;
     padding: 3px 10px;
 `;
@@ -66,10 +66,20 @@ const CategoryName = styled.button`
 `;
 
 const SubTitle = styled.div`
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+`;
+const SubTitleName = styled.div`
     text-align: center;
     font: 15px 'Quicksand', sans-serif ;
     color: ${color.grey.light_grey} ;
-    padding: 10px;
+    padding: 3px;
+`;
+const SubTitleValue = styled.div`
+    text-align: center;
+    font: 15px 'Quicksand', sans-serif ;
+    color: ${color.grey.light_grey} ;
+    padding: 3px;
 `;
 const SubcategoryWrapper = styled.div`
     border: none;
@@ -97,6 +107,7 @@ export default function Dashboard() {
     let arrayOfBudgetSubcategory = (Object.values(budgetData))[1];
     const [showSubcategory, setShowSubcategory] = useState(false);
     const [clickedCategory, setClickedCategory] = useState([]);
+    const [temp,setTemp] = useState();
 
 
     const getDetails = async (userID, date) => {
@@ -130,6 +141,7 @@ export default function Dashboard() {
             }
         }
     }
+    
     const dateCallBackParent = async (props) => {
         let result = await db.signedUser();
         if (result) {
@@ -258,6 +270,24 @@ export default function Dashboard() {
         }
     }
 
+    const calculateAmount = (name,index) => {
+        if(name === "Budget"){
+            let obj = (Object.values(budgetData)[1]);
+            let result = (obj.filter(item => (Object.values(item))[0] === index));
+            let resultArray = result.map(item => Object.values(item)[1])
+            let final = resultArray.map(item => parseInt(item[1]));
+            if(final.length > 0){
+                const reducer = (accumulator, currentValue) => accumulator + currentValue;
+                return final.reduce(reducer);
+            }else{
+                return 0
+            }
+
+        }else{
+            let arrayOfValues = (Object.values(userData))
+        }
+    }
+
     const handleOnClickSubcategory = (e) => {
         let name = e.target.innerText
         if (clickedCategory.includes(name)) {
@@ -312,8 +342,14 @@ export default function Dashboard() {
                 return <CategoryWrapper key={catindex}>
                     <Category >
                         <CategoryName onClick={handleOnClickSubcategory}>{Object.values(item)}</CategoryName>
-                        <SubTitle>Budgeted</SubTitle>
-                        <SubTitle>Spent</SubTitle>
+                        <SubTitle> 
+                            <SubTitleName>Budgeted</SubTitleName>
+                            <SubTitleValue>{calculateAmount("Budget",catindex)}</SubTitleValue>
+                        </SubTitle>
+                        <SubTitle>
+                            <SubTitleName>Spent</SubTitleName>
+                            <SubTitleValue>{calculateAmount("Spent")}</SubTitleValue>
+                        </SubTitle>
                         <MenuButton>
                             <Icon icon={"Menu"} color={color.grey.dark_grey} width="30" height="30" />
                         </MenuButton>
